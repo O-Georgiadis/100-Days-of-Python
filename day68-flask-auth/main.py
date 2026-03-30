@@ -73,7 +73,6 @@ def register():
         # Log user in
         login_user(new_user)
 
-        # return render_template('secrets.html', name=request.form.get("name"))
         return redirect(url_for('secrets'))
     return render_template("register.html")
 
