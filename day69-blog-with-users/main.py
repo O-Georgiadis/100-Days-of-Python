@@ -11,8 +11,7 @@ from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from pathlib import Path
 from forms import CreatePostForm, RegisterForm
-# Import your forms from the forms.py
-from forms import CreatePostForm
+
 
 
 
@@ -68,10 +67,11 @@ with app.app_context():
 # TODO: Use Werkzeug to hash the user's password when creating a new user.
 @app.route('/register', methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
-        email = request.form.get('email')
-        name = request.form.get('name')
-        password = request.form.get('password')
+    form = RegisterForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        name = form.name.data
+        password = form.password.data
 
         #Check if user already exists:
         existing_user = User.query.filter_by(email=email).first()
@@ -90,7 +90,7 @@ def register():
         # Log user in
         login_user(new_user)
 
-        return redirect(url_for('all_posts'))
+        return redirect(url_for('get_all_posts'))
     return render_template("register.html", form=form)
 
 
