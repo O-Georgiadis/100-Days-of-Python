@@ -21,7 +21,6 @@ class Base(DeclarativeBase):
     pass
 db_path = Path(__file__).parent/"instance/posts.db"
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///posts.db'
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
