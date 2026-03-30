@@ -10,7 +10,7 @@ from sqlalchemy import Integer, String, Text
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from pathlib import Path
-from forms import CreatePostForm, RegisterForm
+from forms import CreatePostForm, RegisterForm, LoginForm
 
 
 
@@ -95,9 +95,26 @@ def register():
 
 
 # TODO: Retrieve a user from the database based on their email. 
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
-    return render_template("login.html")
+    form = LoginForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash("This email does not exist, please try again.", "error")
+            return redirect(url_for('login'))
+
+        if not check_password_hash(user.password, password):
+            flash("Incorrect password, please try again.", "error")
+            return redirect(url_for('login'))
+
+        login_user(user)
+        return redirect(url_for('get_all_posts'))
+    return render_template("login.html", form=form)
 
 
 @app.route('/logout')
