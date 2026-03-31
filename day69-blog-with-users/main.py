@@ -170,13 +170,11 @@ def show_post(post_id):
     requested_post = db.get_or_404(BlogPost, post_id)
     comment_form = CommentForm()
 
-    # If someone submits the form while logged out, immediately redirect.
-    # (This is server-side protection; the UI hides the form when logged out.)
-    if request.method == "POST" and not current_user.is_authenticated:
-        flash("You need to be logged in to comment.", "error")
-        return redirect(url_for("login"))
-
     if comment_form.validate_on_submit():
+        if not current_user.is_authenticated:
+            flash("You need to be logged in to comment.", "error")
+            return redirect(url_for("login"))
+
         new_comment = Comment(
             text=comment_form.comment.data,
             author=current_user,
